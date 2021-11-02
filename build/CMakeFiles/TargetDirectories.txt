@@ -1,0 +1,3 @@
+/mnt/d/Teme-IEP/build/CMakeFiles/edit_cache.dir
+/mnt/d/Teme-IEP/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/Teme-IEP/build/CMakeFiles/Teme-IEP.dir
