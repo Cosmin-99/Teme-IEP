@@ -5,11 +5,16 @@ using namespace std;
 class Shape
 {
 protected:
+    // const int width, height;
     int width, height;
 
 public:
-    Shape(int a, int b)
-    {
+    // Shape(int a, int b): width(a) , height(b)
+    // {
+
+    // };
+
+    Shape(int a, int b) {
         width = a;
         height = b;
     };
@@ -23,13 +28,24 @@ public:
         height = object.height;
     }
 
-    // Shape &operator=(const Shape &object){
-    //     width = object.width;
-    //     height = object.height;
-    //     return *this;
-    // }
+    Shape &operator=(const Shape &object){
+        width = object.width;
+        height = object.height;
+        return *this;
+    }
 
-    Shape &operator=(const Shape &object) = delete;
+// Shape &operator=(const Shape &object) 
+//     {
+//         if (this == &object)
+//             return *this;
+    
+//         this->~Shape();
+
+//         new (this) Shape(object.width, object.height);
+//         return *this;
+//     }
+
+    // Shape &operator=(const Shape &object) = delete;
 
     virtual int area(){
         return 0;
@@ -96,6 +112,7 @@ public:
 int main()
 {
 
+    //maked sure objects are initialized before they're used
     Rectangle rect(5, 3);
     Square squ(2, 0);
     Rhombus rho(4, 6);
@@ -110,11 +127,13 @@ int main()
     cout << squ.perimeter() << endl;
     cout << rho.perimeter() << endl;
 
+    //be carefully, this is a copy constructor call, not copy assignment operator
     Square newSquare = squ;
 
     Rectangle newRectangle(6, 9);
 
-    // newRectangle = rect;
+    // this is a copy assignnent operator (now is deleted because, I tell to compiler that I don't want to use it)
+    newRectangle = rect;
 
     cout << "New Square" << endl;
 
@@ -126,7 +145,7 @@ int main()
     cout << newRectangle.area() << endl;
     cout << newRectangle.perimeter() << endl;
 
-    // Shape shp(5);
+    //finally, all objects are destroyed (destructor is called)
 
     return 0;
 }
