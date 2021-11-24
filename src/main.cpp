@@ -5,15 +5,10 @@ using namespace std;
 class Shape
 {
 protected:
-    // const int width, height;
     int width, height;
+    Shape *insideShape;
 
 public:
-    // Shape(int a, int b): width(a) , height(b)
-    // {
-
-    // };
-
     Shape(int a, int b) {
         width = a;
         height = b;
@@ -28,24 +23,51 @@ public:
         height = object.height;
     }
 
-    Shape &operator=(const Shape &object){
+    Shape operator+=(const Shape &object)
+    {
+        width += object.width;
+        height += object.height;
+    }
+
+    // Shape &operator+=(const Shape &object)
+    // {
+    //     width += object.width;
+    //     height += object.height;
+    //     return *this;
+    // }
+
+    Shape &operator=(const Shape &object) 
+    {
+        //if we have same refferences, just return current object refference
+        if (this == &object)
+            return *this;
+
+        //otherwise, do usual operations
         width = object.width;
         height = object.height;
+
+        //in case that we're using pointers, before delete, make sure you have a new copy of the original value
+        //in the case below (commented), it can be seen that we first try to delete the old angle,
+        //and assign the new value over an already deleted field.That's not good, because our program will throw an exception/error.
+        //----------------------------
+        // delete insideShape;
+        // insideShape = new Shape(*object.insideShape);
+
+        Shape *copyOriginal = insideShape;
+        insideShape = new Shape(*object.insideShape);
+        delete copyOriginal;
+
         return *this;
     }
 
-// Shape &operator=(const Shape &object) 
-//     {
-//         if (this == &object)
-//             return *this;
-    
-//         this->~Shape();
+    virtual int getWidth() {
+        return width;
+    }
 
-//         new (this) Shape(object.width, object.height);
-//         return *this;
-//     }
-
-    // Shape &operator=(const Shape &object) = delete;
+    virtual int getHeight()
+    {
+        return height;
+    }
 
     virtual int area(){
         return 0;
@@ -58,11 +80,30 @@ public:
 
 class Square : public Shape
 {
-public:
-    Square(int a, int b) : Shape(a, b)
-    {
+private:
+    int angle;
+    Shape *insideShape;
 
-    };
+public:
+    Square(int a, int b, int c) : Shape(a, b)
+    {
+        angle = c;
+    }
+
+    Square& operator=(const Square& object) {
+        //if we have same refferences, just return current object refference
+        if (this == &object)
+            return *this;
+
+        //otherwise, copy class fields
+        angle = object.angle;
+
+        //and make sure you're copy also the base class fiels, by call his copy assignment operator
+        // Shape::operator=(object);
+
+        return *this;
+    }
+
     int area()
     {
         return (width * width);
@@ -111,41 +152,31 @@ public:
 
 int main()
 {
+    // Rectangle rect(5, 3);
+    // Square squ(2, 0);
+    // Rhombus r1(2, 2);
 
-    //maked sure objects are initialized before they're used
-    Rectangle rect(5, 3);
-    Square squ(2, 0);
-    Rhombus rho(4, 6);
-    Shape shape(100, 100);
+    // cout << "Rect width " << rect.getWidth() << endl;
+    // cout << "Rect height " << rect.getHeight() << endl;
+    // cout << "Square width " << squ.getWidth() << endl;
+    // cout << "Square height " << squ.getHeight() << endl;
+    // cout << "Rhombus width " << r1.getWidth() << endl;
+    // cout << "Rhombus height " << r1.getHeight() << endl;
 
-    cout << shape.area() << endl;
-    cout << shape.perimeter() << endl;
-    cout << rect.area() << endl;
-    cout << squ.area() << endl;
-    cout << rho.area() << endl;
-    cout << rect.perimeter() << endl;
-    cout << squ.perimeter() << endl;
-    cout << rho.perimeter() << endl;
+    // r1 += squ += rect;
 
-    //be carefully, this is a copy constructor call, not copy assignment operator
-    Square newSquare = squ;
+    // //bad things will happens if we're not return the current object refference if we try to use += operator
+    // cout << "Rhombus area " << r1.area() << endl;
+    // cout << "Rhombus perimeter " << r1.perimeter() << endl;
+    // cout << "Rhombus width " << r1.getWidth() << endl;
+    // cout << "Rhombus height " << r1.getHeight() << endl;
 
-    Rectangle newRectangle(6, 9);
 
-    // this is a copy assignnent operator (now is deleted because, I tell to compiler that I don't want to use it)
-    newRectangle = rect;
-
-    cout << "New Square" << endl;
-
-    cout << newSquare.area() << endl;
-    cout << newSquare.perimeter() << endl;
-
-    cout << "New Rectangle" << endl;
-
-    cout << newRectangle.area() << endl;
-    cout << newRectangle.perimeter() << endl;
-
-    //finally, all objects are destroyed (destructor is called)
+    Square sq1(2, 2, 2);
+    Square sq2(1, 1, 1);
+    sq2 = sq1;
+    cout << "Square width " << sq2.getWidth() << endl;
+    cout << "Square height " << sq2.getHeight() << endl;
 
     return 0;
 }
